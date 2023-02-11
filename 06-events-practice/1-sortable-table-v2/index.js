@@ -27,10 +27,16 @@ export default class SortableTable {
   }
 
   get subElements() {
-    return {
-      header: this.header,
-      body: this.body,
-    };
+    const result = {};
+    const elements = this.element.querySelectorAll('[data-element]');
+
+    for (const subElement of elements) {
+      const name = subElement.dataset.element;
+
+      result[name] = subElement;
+    }
+
+    return result;
   }
 
   createHeader() {
@@ -45,11 +51,7 @@ export default class SortableTable {
   }
 
   getColumnOrder(columnId) {
-    if (this.sorted.id === columnId) {
-      return this.sorted.order;
-    }
-
-    return '';
+    return this.sorted.id === columnId ? this.sorted.order : '';
   }
 
   renderHeader() {
@@ -128,7 +130,11 @@ export default class SortableTable {
 
     let comparator = customComparator;
     if (!comparator) {
-      comparator = this.sortTypeMap[fieldValue] === 'number' ? numberComparator(orderValue) : stringComparator(orderValue);
+      switch (this.sortTypeMap[fieldValue]) {
+      case 'number': comparator = numberComparator(orderValue); break;
+      case 'string':
+      default: comparator = stringComparator(orderValue); break;
+      }
     }
 
     this.sorted.order = orderValue;
@@ -166,11 +172,16 @@ export default class SortableTable {
   };
 
   destroy() {
-    this.element.remove();
+    this.remove();
+    this.element = null;
+    this.header = null;
+    this.body = null;
   }
 
   remove() {
-    this.element.remove();
+    if (this.element) {
+      this.element.remove();
+    }
   }
 }
 

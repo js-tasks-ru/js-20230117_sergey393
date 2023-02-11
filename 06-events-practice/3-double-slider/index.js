@@ -17,13 +17,13 @@ export default class DoubleSlider {
     const rightOffset = 100 - this.selectedTo / (this.max - this.min) * 100;
 
     return `
-      <span data-element="from">${this.formatValue(this.min)}</span>
+      <span data-element="from">${this.formatValue(this.selectedFrom)}</span>
       <div class="range-slider__inner">
         <span class="range-slider__progress" style="left: ${leftOffset}%; right: ${rightOffset}%"></span>
         <span class="range-slider__thumb-left" style="left: ${leftOffset}%"></span>
         <span class="range-slider__thumb-right" style="right: ${rightOffset}%"></span>
       </div>
-      <span data-element="to">${this.formatValue(this.max)}</span>
+      <span data-element="to">${this.formatValue(this.selectedTo)}</span>
     `;
   }
 
@@ -37,7 +37,7 @@ export default class DoubleSlider {
     this.element.innerHTML = this.template;
   }
 
-  onPointerdownHandler(e) {
+  onPointerdownHandler = (e) => {
     this.baseSize = this.element.getElementsByClassName('range-slider__inner')[0].getBoundingClientRect();
     this.changeEl = e.target;
 
@@ -51,11 +51,11 @@ export default class DoubleSlider {
     this.change = true;
   }
 
-  onPointerupHandler() {
+  onPointerupHandler = () => {
     this.change = false;
   }
 
-  onPointermoveHandler(e) {
+  onPointermoveHandler = (e) => {
     if (!this.change) {
       return;
     }
@@ -102,9 +102,9 @@ export default class DoubleSlider {
   }
 
   addListeners() {
-    this.element.addEventListener('pointerdown', this.onPointerdownHandler.bind(this));
-    document.addEventListener('pointerup', this.onPointerupHandler.bind(this));
-    document.addEventListener('pointermove', this.onPointermoveHandler.bind(this));
+    this.element.addEventListener('pointerdown', this.onPointerdownHandler);
+    document.addEventListener('pointerup', this.onPointerupHandler);
+    document.addEventListener('pointermove', this.onPointermoveHandler);
   }
 
   destroy() {
@@ -115,6 +115,8 @@ export default class DoubleSlider {
   }
 
   remove() {
-    this.element.remove();
+    if (this.element) {
+      this.element.remove();
+    }
   }
 }

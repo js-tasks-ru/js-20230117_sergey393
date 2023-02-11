@@ -3,6 +3,8 @@ class Tooltip {
   element;
   message = '';
 
+  TOOLTIP_OFFSET = 10;
+
   constructor() {
     if (Tooltip.instance) {
       return Tooltip.instance;
@@ -12,24 +14,24 @@ class Tooltip {
     this.render();
   }
 
-  onOver(e) {
+  onOver = (e) => {
     this.message = e.target.dataset.tooltip;
     if (this.message) {
       this.render();
       this.element.style.visibility = 'visible';
-      e.target.addEventListener('pointermove', this.onMove.bind(this));
-      e.target.addEventListener('pointerout', this.onOut.bind(this), { once: true });
+      e.target.addEventListener('pointermove', this.onMove);
+      e.target.addEventListener('pointerout', this.onOut, { once: true });
     }
   }
 
-  onMove(e) {
+  onMove = (e) => {
     if (this.element) {
-      this.element.style.left = (e.clientX + 10) + 'px';
-      this.element.style.top = (e.clientY + 10) + 'px';
+      this.element.style.left = (e.clientX + this.TOOLTIP_OFFSET) + 'px';
+      this.element.style.top = (e.clientY + this.TOOLTIP_OFFSET) + 'px';
     }
   }
 
-  onOut(e) {
+  onOut = (e) => {
     this.message = null;
     if (this.element) {
       this.element.style.visibility = 'hidden';
@@ -49,11 +51,12 @@ class Tooltip {
   }
 
   initialize() {
-    document.body.addEventListener('pointerover', this.onOver.bind(this));
+    document.addEventListener('pointerover', this.onOver);
+    setTimeout(() => this.destroy(), 5000);
   }
 
   destroy() {
-    document.body.removeEventListener("pointerover", this.onOver);
+    document.removeEventListener("pointerover", this.onOver);
     this.remove();
   }
 
